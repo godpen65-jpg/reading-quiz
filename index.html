@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>독서퀴즈 대회 준비 — 효녀 심청 · 콩쥐 팥쥐 · 단군 이야기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#2E2620;
+    --ink-soft:#6B5D50;
+    --paper:#FBF5E9;
+    --paper-2:#F3E9D6;
+    --line:#DCCBAE;
+    --main:#C0512F;
+    --main-deep:#9A3E22;
+    --good:#2F7A4E;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; padding:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Gowun Dodum','Malgun Gothic',sans-serif;
+    font-size:19px; line-height:1.7;
+  }
+  .wrap{max-width:640px; margin:0 auto; padding:28px 20px 60px;}
+  h1{
+    font-family:'Gaegu',cursive; font-weight:700;
+    font-size:40px; line-height:1.25; margin:10px 0 4px; color:var(--main-deep);
+  }
+  .sub{color:var(--ink-soft); font-size:17px; margin:0 0 26px;}
+  .rule{border:0; border-top:1px solid var(--line); margin:24px 0;}
+
+  button{font-family:inherit; font-size:18px; cursor:pointer; transition:background .15s ease, color .15s ease;}
+  .pick{
+    display:block; width:100%; text-align:left;
+    background:transparent; border:2px solid var(--line); border-radius:12px;
+    padding:16px 18px; margin:0 0 12px; color:var(--ink);
+  }
+  .pick:hover{border-color:var(--main); background:#fff;}
+  .pick b{font-family:'Gaegu',cursive; font-size:26px; color:var(--main-deep); display:block;}
+  .pick span{color:var(--ink-soft); font-size:16px;}
+
+  .bar{height:8px; background:var(--paper-2); border-radius:99px; overflow:hidden; margin:0 0 8px;}
+  .bar > i{display:block; height:100%; background:var(--main); width:0; transition:width .25s ease;}
+  .meta{display:flex; justify-content:space-between; font-size:16px; color:var(--ink-soft); margin-bottom:22px;}
+
+  .qbook{font-size:16px; color:var(--main-deep); letter-spacing:.02em; margin-bottom:6px;}
+  .qtext{font-family:'Gaegu',cursive; font-weight:700; font-size:31px; line-height:1.45; margin:0 0 22px;}
+
+  input[type=text]{
+    width:100%; font-family:'Gaegu',cursive; font-size:28px; padding:12px 14px;
+    border:0; border-bottom:3px solid var(--line); background:transparent; color:var(--ink);
+    outline:none; margin-bottom:14px;
+  }
+  input[type=text]:focus{border-bottom-color:var(--main);}
+
+  .go{background:var(--main); color:#fff; border:0; border-radius:10px; padding:13px 26px; font-weight:bold;}
+  .go:hover{background:var(--main-deep);}
+  .ghost{background:transparent; border:1px solid var(--line); border-radius:10px; padding:11px 16px; color:var(--ink-soft); font-size:16px;}
+  .ghost:hover{border-color:var(--main); color:var(--main-deep);}
+  .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+  .row.sep{margin-top:18px; padding-top:16px; border-top:1px solid var(--line);}
+
+  .choice{
+    display:block; width:100%; text-align:left; background:transparent;
+    border:2px solid var(--line); border-radius:12px; padding:13px 16px; margin-bottom:10px; color:var(--ink);
+  }
+  .choice:hover{border-color:var(--main); background:#fff;}
+  .choice.ok{border-color:var(--good); color:var(--good); font-weight:bold;}
+  .choice.no{border-color:#CFC6B8; color:#A79C8E;}
+  .choice em{font-style:normal; color:var(--main-deep); font-family:'Gaegu',cursive; font-size:23px; margin-right:8px;}
+
+  .say{margin:16px 0 0; font-size:19px; min-height:30px;}
+  .say.ok{color:var(--good); font-weight:bold;}
+  .say.no{color:var(--main-deep);}
+  .hint{margin:14px 0 0; padding:12px 16px; background:var(--paper-2); border-radius:10px; font-size:17px; color:var(--ink-soft);}
+  .fade{animation:fade .25s ease-out both;}
+  @keyframes fade{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
+  .hide{display:none;}
+
+  .score{font-family:'Gaegu',cursive; font-size:56px; color:var(--main-deep); margin:6px 0 0;}
+  .stars{font-size:22px; letter-spacing:2px; color:var(--main);}
+  .list{margin:20px 0 0; padding:0; list-style:none;}
+  .list li{padding:12px 0; border-top:1px solid var(--line); font-size:17px;}
+  .list li b{display:block; font-weight:normal; color:var(--ink-soft); font-size:15px;}
+  .tag{font-size:15px; color:var(--ink-soft);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- 시작 -->
+<section id="start">
+  <h1>독서퀴즈 대회<br>연습 문제</h1>
+  <p class="sub">효녀 심청 · 콩쥐 팥쥐 · 단군 이야기 — 이야기마다 15문제</p>
+  <hr class="rule">
+  <p style="margin:0 0 16px; color:var(--ink-soft); font-size:17px;">
+    먼저 <b>직접 답을 써 보고</b>, 어려우면 <b>보기 보여주세요</b> 버튼을 눌러요.<br>
+    직접 맞히면 별 2개 ★★, 보기를 보고 맞히면 별 1개 ★
+  </p>
+  <div id="menu"></div>
+</section>
+
+<!-- 문제 -->
+<section id="quiz" class="hide">
+  <div class="bar"><i id="progbar"></i></div>
+  <div class="meta"><span id="progtext"></span><span id="startxt"></span></div>
+
+  <div id="card">
+    <div class="qbook" id="qbook"></div>
+    <p class="qtext" id="qtext"></p>
+
+    <div id="writeBox">
+      <input type="text" id="answer" placeholder="여기에 답을 써 보세요" autocomplete="off">
+      <div class="row">
+        <button class="go" id="submit">확인!</button>
+        <button class="ghost" id="hintBtn">힌트 주세요</button>
+        <button class="ghost" id="showBtn">보기 보여주세요</button>
+      </div>
+    </div>
+
+    <div id="choiceBox" class="hide"></div>
+    <div id="hintBox" class="hide"></div>
+    <p class="say" id="say"></p>
+    <div class="row sep hide" id="nextRow"><button class="go" id="next">다음 문제 →</button></div>
+  </div>
+</section>
+
+<!-- 결과 -->
+<section id="result" class="hide"></section>
+
+</div>
+<script>
+const BOOKS = {
+  sim: { name:"효녀 심청", q:[
+    ["심청이의 아버지 이름은 무엇인가요?", ["심학규","심봉사","심학규심봉사"], ["심학규","심봉수","심돌쇠"], "앞을 못 보셔서 '심봉사'라고도 불려요."],
+    ["심청이가 태어난 지 이레(7일) 만에 세상을 떠난 사람은 누구인가요?", ["어머니","엄마","곽씨부인","어머님"], ["어머니","아버지","할머니"], "심청이는 그 얼굴을 한 번도 보지 못했어요."],
+    ["어린 심청이는 눈먼 아버지를 위해 동네를 다니며 무엇을 얻어 왔나요?", ["밥","동냥","젖","음식","쌀","밥동냥"], ["밥","돈","약"], "배고픈 아버지를 먹이려고 했어요."],
+    ["개천에 빠진 심봉사를 건져 준 사람은 누구인가요?", ["스님","중","화주승","몽운사스님"], ["스님","이웃집 아저씨","임금님"], "절에서 온 분이에요."],
+    ["스님은 쌀 몇 석을 바치면 눈을 뜰 수 있다고 했나요?", ["300석","삼백석","300","삼백","공양미300석"], ["300석","100석","30석"], "공양미 ○○○석!"],
+    ["심청이는 쌀을 구하려고 누구에게 자기 몸을 팔았나요?", ["뱃사람","뱃사람들","선원","장사꾼"], ["뱃사람들","이웃집 부자","스님"], "배를 타고 장사하러 다니는 사람들이에요."],
+    ["심청이가 몸을 던진 바다의 이름은 무엇인가요?", ["인당수"], ["인당수","황해","한강"], "'인'으로 시작하는 세 글자예요."],
+    ["바다에 빠진 심청이가 가게 된 바닷속 궁궐은 어디인가요?", ["용궁"], ["용궁","하늘나라","저승"], "용왕님이 사는 곳이에요."],
+    ["심청이가 용궁에서 다시 만난 반가운 사람은 누구인가요?", ["어머니","엄마","곽씨부인","어머님"], ["어머니","아버지","스님"], "한 번도 본 적 없어 그리웠던 사람이에요."],
+    ["심청이는 무슨 꽃을 타고 물 위로 올라왔나요?", ["연꽃","연"], ["연꽃","무궁화","진달래"], "연못에 피는 꽃이에요."],
+    ["물 위에 뜬 커다란 꽃을 발견한 뱃사람들은 그 꽃을 누구에게 바쳤나요?", ["임금님","임금","왕","황제"], ["임금님","사또","스님"], "나라에서 가장 높은 분이에요."],
+    ["임금님과 결혼한 심청이는 무엇이 되었나요?", ["황후","왕비","황후왕비"], ["황후(왕비)","공주","선녀"], "임금님의 아내를 부르는 말이에요."],
+    ["심청이가 아버지를 찾으려고 연 잔치의 이름은 무엇인가요?", ["맹인잔치","맹인들잔치","봉사잔치"], ["맹인 잔치","생일 잔치","꽃 잔치"], "앞을 못 보는 사람들을 모두 불러 모았어요."],
+    ["잔치에서 심청이 목소리를 들은 심봉사에게 어떤 일이 일어났나요?", ["눈을떴다","눈을떴어요","눈을뜸","눈이보였다","눈을떴습니다","눈뜸"], ["눈을 떴다","춤을 췄다","기절했다"], "가장 바라던 일이 이루어졌어요."],
+    ["심청이처럼 부모님을 정성껏 모시는 마음을 무엇이라고 하나요?", ["효","효도","효심"], ["효도","우정","용기"], "'효'로 시작하는 말이에요."]
+  ]},
+  kong: { name:"콩쥐 팥쥐", q:[
+    ["새어머니가 데려온, 콩쥐를 괴롭히는 딸의 이름은 무엇인가요?", ["팥쥐"], ["팥쥐","콩순이","쌀쥐"], "콩쥐와 짝을 이루는 이름이에요."],
+    ["새어머니가 물을 채우라고 준 항아리는 어떤 항아리였나요?", ["깨진항아리","밑이깨진항아리","구멍난항아리","금간항아리","밑빠진항아리","깨진독"], ["밑이 깨진 항아리","아주 작은 항아리","금으로 만든 항아리"], "아무리 물을 부어도 다 새어 나가요."],
+    ["항아리의 구멍을 몸으로 막아 준 동물은 누구인가요?", ["두꺼비"], ["두꺼비","개구리","거북이"], "등이 울퉁불퉁한 동물이에요."],
+    ["새어머니가 콩쥐에게 준 호미는 무엇으로 만든 것이었나요?", ["나무","나무호미","목호미"], ["나무 호미","쇠 호미","금 호미"], "약해서 금방 부러졌어요."],
+    ["팥쥐가 받은 호미는 무엇으로 만든 것이었나요?", ["쇠","쇠호미","철","철호미"], ["쇠 호미","나무 호미","돌 호미"], "단단해서 잘 부러지지 않아요."],
+    ["콩쥐가 매야 했던 밭은 어떤 밭이었나요?", ["자갈밭","돌밭","자갈"], ["자갈밭","모래밭","꽃밭"], "돌이 가득해서 매기 힘든 밭이에요."],
+    ["힘들어하는 콩쥐 대신 자갈밭을 갈아 준 동물은 누구인가요?", ["검은소","소","검정소","황소"], ["검은 소","호랑이","말"], "'음매' 하고 우는 큰 동물이에요."],
+    ["잔치에 가기 전, 새어머니가 콩쥐에게 찧어 놓으라고 한 것은 무엇인가요?", ["벼","쌀","곡식"], ["벼","콩","보리"], "찧으면 쌀이 되는 곡식이에요."],
+    ["벼를 대신 찧어 준 새들은 누구인가요?", ["참새","참새떼","참새들"], ["참새 떼","까치 떼","비둘기 떼"], "짹짹 우는 작은 새예요."],
+    ["콩쥐에게 예쁜 옷과 꽃신을 준 분은 누구인가요?", ["선녀","선녀님","하늘선녀"], ["선녀님","산신령님","이웃집 할머니"], "하늘에서 내려온 아름다운 분이에요."],
+    ["잔치에 급히 가다가 개울에 빠뜨린 것은 무엇인가요?", ["꽃신","신발","신","꽃신한짝"], ["꽃신","비녀","치마"], "선녀님이 준 예쁜 신이에요."],
+    ["개울에 떨어진 꽃신을 주운 사람은 누구인가요?", ["사또","원님","감사","사또원님"], ["사또(원님)","임금님","나무꾼"], "고을을 다스리는 높은 분이에요."],
+    ["그 사람은 꽃신의 주인을 어떻게 찾았나요?", ["신어보게했다","신겨봤다","발에신겨봤다","신어보게함","신발을신겨봤다","여자들에게신어보게했다"], ["여자들에게 신어 보게 했다","이름을 물어봤다","그림을 그려 붙였다"], "발에 꼭 맞는 사람을 찾았어요."],
+    ["이야기 끝에서 팥쥐와 새어머니는 어떻게 되었나요?", ["벌을받았다","벌받았다","혼났다","쫓겨났다","벌받음"], ["벌을 받았다","상을 받았다","부자가 되었다"], "나쁜 일을 많이 했으니까요."],
+    ["콩쥐 팥쥐 이야기가 우리에게 알려 주는 것은 무엇인가요?", ["착하게살면복을받는다","착하게살면복이온다","권선징악","착하게살자","착한사람이복을받는다"], ["착하게 살면 복을 받는다","힘센 사람이 이긴다","거짓말을 해도 괜찮다"], "착한 콩쥐는 끝내 행복해졌어요."]
+  ]},
+  dan: { name:"단군 이야기", q:[
+    ["하늘나라를 다스리던 임금님의 이름은 무엇인가요?", ["환인"], ["환인","환웅","단군"], "환웅의 아버지예요."],
+    ["인간 세상에 내려오고 싶어 했던 환인의 아들은 누구인가요?", ["환웅"], ["환웅","환인","웅녀"], "훗날 단군의 아버지가 돼요."],
+    ["환웅이 하늘에서 가지고 내려온 세 가지 보물을 무엇이라고 하나요?", ["천부인","천부인세개"], ["천부인","삼신기","보물상자"], "거울, 칼, 방울 세 가지예요."],
+    ["환웅이 하늘에서 내려온 산의 이름은 무엇인가요?", ["태백산"], ["태백산","한라산","금강산"], "'태'로 시작하는 산이에요."],
+    ["환웅과 함께 온 세 신하가 다스린 것은 바람, 비, 그리고 무엇인가요?", ["구름"], ["구름","눈","번개"], "하늘에 둥둥 떠다녀요."],
+    ["환웅이 내려와 세운 도시의 이름은 무엇인가요?", ["신시"], ["신시","아사달","한양"], "'신'으로 시작하는 두 글자예요."],
+    ["사람이 되고 싶다며 환웅을 찾아온 두 동물은 무엇인가요?", ["곰과호랑이","호랑이와곰","곰호랑이","곰이랑호랑이"], ["곰과 호랑이","사자와 곰","여우와 늑대"], "하나는 겨울잠을 자고, 하나는 어흥 하고 울어요."],
+    ["환웅이 두 동물에게 먹으라고 준 것은 무엇인가요?", ["쑥과마늘","마늘과쑥","쑥마늘","쑥이랑마늘"], ["쑥과 마늘","당근과 무","도토리와 밤"], "쓰고 매운 것이에요."],
+    ["동굴에서 며칠 동안 햇빛을 보지 말라고 했나요?", ["100일","백일","100","백"], ["100일","10일","1000일"], "세 자리 숫자예요."],
+    ["참지 못하고 동굴 밖으로 뛰쳐나간 동물은 누구인가요?", ["호랑이","범"], ["호랑이","곰","여우"], "성질이 급했어요."],
+    ["끝까지 참아서 사람이 된 동물은 누구인가요?", ["곰"], ["곰","호랑이","토끼"], "느리지만 끈기가 있었어요."],
+    ["사람이 된 곰에게 붙여진 이름은 무엇인가요?", ["웅녀"], ["웅녀","선녀","환녀"], "곰 '웅' 자가 들어간 이름이에요."],
+    ["환웅과 웅녀 사이에서 태어난 아들의 이름은 무엇인가요?", ["단군","단군왕검","왕검"], ["단군왕검","환인","주몽"], "우리나라를 처음 세운 분이에요."],
+    ["단군왕검이 세운 우리나라 최초의 나라 이름은 무엇인가요?", ["고조선","조선"], ["고조선","고구려","신라"], "'고'로 시작하는 세 글자예요."],
+    ["'널리 사람을 이롭게 한다'는 뜻으로, 단군 이야기에 담긴 말은 무엇인가요?", ["홍익인간"], ["홍익인간","백의민족","동방예의지국"], "네 글자예요. '홍'으로 시작해요."]
+  ]}
+};
+
+const CHEER = ["정답이에요! 대단해요 👏","딩동댕! 잘했어요 ⭐","맞았어요! 책을 잘 읽었네요 📖","완벽해요! 👍","정답! 척척박사네요 🎉"];
+const NUDGE = ["아쉬워요. 한 번 더 생각해 볼까요?","조금 달라요. 다시 써 볼까요?","음~ 아니에요. 힌트를 볼까요?"];
+
+const $ = id => document.getElementById(id);
+const norm = s => (s||"").replace(/[\s()（）·,.'"?!~\-\/]/g,"").toLowerCase();
+const pick = a => a[Math.floor(Math.random()*a.length)];
+
+let list = [], idx = 0, stars = 0, wrong = [], showed = false, done = false;
+
+// 시작 화면 메뉴
+const menuData = [
+  ["sim","효녀 심청","15문제"],
+  ["kong","콩쥐 팥쥐","15문제"],
+  ["dan","단군 이야기","15문제"],
+  ["all","세 가지 모두 도전!","45문제 · 대회 실전 연습"]
+];
+$("menu").innerHTML = menuData.map(m =>
+  `<button class="pick" data-key="${m[0]}"><b>${m[1]}</b><span>${m[2]}</span></button>`).join("");
+$("menu").onclick = e => {
+  const b = e.target.closest(".pick"); if(!b) return;
+  start(b.dataset.key);
+};
+
+function build(key){
+  const keys = key === "all" ? ["sim","kong","dan"] : [key];
+  const out = [];
+  keys.forEach(k => BOOKS[k].q.forEach(q => out.push({book:BOOKS[k].name, t:q[0], a:q[1], c:q[2], h:q[3]})));
+  return out;
+}
+
+function start(key){
+  list = build(key); idx = 0; stars = 0; wrong = []; done = false;
+  $("start").classList.add("hide"); $("result").classList.add("hide"); $("quiz").classList.remove("hide");
+  render();
+}
+
+function render(){
+  const q = list[idx];
+  showed = false; done = false;
+  $("progbar").style.width = (idx/list.length*100) + "%";
+  $("progtext").textContent = `${idx+1} / ${list.length}번`;
+  $("startxt").textContent = `모은 별 ${stars}개`;
+  $("qbook").textContent = q.book;
+  $("qtext").textContent = q.t;
+  $("card").classList.remove("fade"); void $("card").offsetWidth; $("card").classList.add("fade");
+
+  $("writeBox").classList.remove("hide");
+  $("choiceBox").classList.add("hide"); $("choiceBox").innerHTML = "";
+  $("hintBox").classList.add("hide"); $("hintBox").textContent = "";
+  $("nextRow").classList.add("hide");
+  $("say").textContent = ""; $("say").className = "say";
+  $("answer").value = ""; $("answer").disabled = false;
+  $("writeBox").querySelectorAll("button").forEach(b => b.disabled = false);
+  $("answer").focus();
+}
+
+function finishQ(got){
+  done = true;
+  stars += got;
+  if(got === 0) wrong.push(list[idx]);
+  $("startxt").textContent = `모은 별 ${stars}개`;
+  $("nextRow").classList.remove("hide");
+  $("next").focus();
+}
+
+// 주관식 채점
+$("submit").onclick = () => {
+  if(done) return;
+  const v = $("answer").value.trim();
+  if(!v){ $("answer").focus(); return; }
+  const q = list[idx];
+  if(q.a.some(a => norm(a) === norm(v))){
+    $("say").textContent = pick(CHEER) + "  ★★";
+    $("say").className = "say ok";
+    $("answer").disabled = true;
+    $("writeBox").querySelectorAll("button").forEach(b => b.disabled = true);
+    finishQ(2);
+  } else {
+    $("say").textContent = pick(NUDGE);
+    $("say").className = "say no";
+    $("answer").select();
+  }
+};
+$("answer").addEventListener("keydown", e => { if(e.key === "Enter") $("submit").click(); });
+
+// 힌트
+$("hintBtn").onclick = () => {
+  $("hintBox").textContent = "💡 " + list[idx].h;
+  $("hintBox").className = "hint fade";
+};
+
+// 보기 보여주기
+$("showBtn").onclick = () => {
+  if(showed) return;
+  showed = true;
+  const q = list[idx];
+  $("writeBox").classList.add("hide");
+  $("say").textContent = "보기 중에서 골라 보세요. (맞히면 별 1개 ★)";
+  $("say").className = "say";
+  const nums = ["①","②","③"];
+  $("choiceBox").innerHTML = q.c.map((c,i) =>
+    `<button class="choice" data-i="${i}"><em>${nums[i]}</em>${c}</button>`).join("");
+  $("choiceBox").className = "fade";
+  $("choiceBox").onclick = e => {
+    const b = e.target.closest(".choice"); if(!b || done) return;
+    const chosen = q.c[+b.dataset.i];
+    const isOk = q.a.some(a => norm(a) === norm(chosen));
+    $("choiceBox").querySelectorAll(".choice").forEach(el => {
+      const txt = q.c[+el.dataset.i];
+      if(q.a.some(a => norm(a) === norm(txt))) el.classList.add("ok");
+      else el.classList.add("no");
+    });
+    if(isOk){
+      $("say").textContent = "정답이에요! 별 1개 ★";
+      $("say").className = "say ok";
+      finishQ(1);
+    } else {
+      $("say").textContent = "정답은 초록색으로 표시된 것이에요. 다음에 꼭 맞혀요!";
+      $("say").className = "say no";
+      finishQ(0);
+    }
+  };
+};
+
+$("next").onclick = () => {
+  idx++;
+  if(idx < list.length) render(); else showResult();
+};
+
+function showResult(){
+  $("quiz").classList.add("hide");
+  const max = list.length * 2;
+  const pct = Math.round(stars / max * 100);
+  let msg;
+  if(pct === 100) msg = "완벽해요! 대회 나가도 되겠어요 🏆";
+  else if(pct >= 80) msg = "아주 잘했어요! 조금만 더 하면 완벽해요 🎉";
+  else if(pct >= 50) msg = "잘하고 있어요! 틀린 문제만 한 번 더 풀어 볼까요? 💪";
+  else msg = "괜찮아요. 책을 한 번 더 읽고 다시 도전해 봐요 📖";
+
+  let html = `<h1>다 풀었어요!</h1>
+    <p class="sub">${msg}</p><hr class="rule">
+    <p class="tag">모은 별</p>
+    <p class="score">${stars} <span style="font-size:26px;color:var(--ink-soft)">/ ${max}개</span></p>
+    <p class="stars">${"★".repeat(Math.min(20, Math.round(stars/max*20)))}${"☆".repeat(20-Math.min(20,Math.round(stars/max*20)))}</p>`;
+
+  if(wrong.length){
+    html += `<hr class="rule"><p style="font-family:'Gaegu',cursive;font-size:26px;margin:0 0 4px;">틀린 문제 ${wrong.length}개</p>
+      <ul class="list">` + wrong.map(w =>
+        `<li><b>${w.book}</b>${w.t}<br><span style="color:var(--main-deep)">정답: ${w.a[0]}</span></li>`).join("") + `</ul>`;
+  }
+  html += `<div class="row sep">
+      ${wrong.length ? `<button class="go" id="again">틀린 문제만 다시 풀기</button>` : ""}
+      <button class="ghost" id="home">처음으로</button>
+    </div>`;
+
+  $("result").innerHTML = html;
+  $("result").classList.remove("hide");
+  window.scrollTo(0,0);
+
+  if($("again")) $("again").onclick = () => {
+    list = wrong.slice(); idx = 0; stars = 0; wrong = [];
+    $("result").classList.add("hide"); $("quiz").classList.remove("hide");
+    render();
+  };
+  $("home").onclick = () => {
+    $("result").classList.add("hide"); $("start").classList.remove("hide");
+  };
+}
+</script>
+</body>
+</html>
