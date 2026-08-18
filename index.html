@@ -47,7 +47,7 @@
   .modes{display:flex; gap:10px; margin:0 0 10px;}
   .modes .mode{
     flex:1; background:transparent; border:2px solid var(--line); border-radius:12px;
-    padding:14px 8px; font-family:'Gaegu',cursive; font-size:25px; color:var(--ink-soft);
+    padding:14px 6px; font-family:'Gaegu',cursive; font-size:21px; color:var(--ink-soft);
   }
   .modes .mode:hover{border-color:var(--main);}
   .modes .mode.on{border-color:var(--main); background:var(--main); color:#fff;}
@@ -83,6 +83,15 @@
   .choice.no{border-color:#CFC6B8; color:#A79C8E;}
   .choice em{font-style:normal; color:var(--main-deep); font-family:'Gaegu',cursive; font-size:23px; margin-right:8px;}
 
+  textarea#essay{
+    width:100%; font-family:'Gowun Dodum','Malgun Gothic',sans-serif; font-size:18px; line-height:1.8;
+    padding:14px; border:2px solid var(--line); border-radius:12px; background:#fff; color:var(--ink);
+    outline:none; resize:vertical; margin-bottom:14px;
+  }
+  textarea#essay:focus{border-color:var(--main);}
+  .model{margin:16px 0 0; padding:16px 18px; background:#fff; border:2px solid var(--line); border-radius:12px; font-size:18px; line-height:1.75;}
+  .model b{display:block; font-family:'Gaegu',cursive; font-size:24px; color:var(--main-deep); margin-bottom:6px;}
+  .model .tip{margin-top:12px; padding-top:10px; border-top:1px solid var(--line); font-size:16px; color:var(--ink-soft);}
   .say{margin:16px 0 0; font-size:19px; min-height:30px;}
   .say.ok{color:var(--good); font-weight:bold;}
   .say.no{color:var(--main-deep);}
@@ -105,11 +114,12 @@
 <!-- 시작 -->
 <section id="start">
   <h1>독서퀴즈 대회<br>연습 문제</h1>
-  <p class="sub">효녀 심청 · 콩쥐 팥쥐 · 단군 이야기 — 이야기마다 15문제</p>
+  <p class="sub">효녀 심청 · 콩쥐 팥쥐 · 단군 이야기</p>
   <hr class="rule">
   <div class="modes" id="modes">
     <button class="mode on" data-mode="write">✏️ 주관식</button>
     <button class="mode" data-mode="choice">📋 객관식</button>
+    <button class="mode" data-mode="essay">📝 서술형</button>
   </div>
   <p class="lead" id="modeDesc"></p>
   <div id="menu"></div>
@@ -133,6 +143,16 @@
     </div>
 
     <div id="choiceBox" class="hide"></div>
+
+    <div id="essayBox" class="hide">
+      <textarea id="essay" rows="4" placeholder="생각을 문장으로 써 보세요"></textarea>
+      <div class="row"><button class="go" id="modelBtn">예시 답안 보기</button></div>
+      <div id="modelBox" class="hide"></div>
+      <div class="row hide" id="selfRow">
+        <button class="ghost" id="selfOk">비슷하게 썼어요 👍</button>
+        <button class="ghost" id="selfNo">더 연습할래요 🙂</button>
+      </div>
+    </div>
     <div class="row" id="hintRow" style="margin-top:14px;"><button class="ghost" id="hintBtn">힌트 주세요</button></div>
     <div id="hintBox" class="hide"></div>
     <p class="say" id="say"></p>
@@ -199,6 +219,42 @@ const BOOKS = {
   ]}
 };
 
+const ESSAY = {
+  sim: { name:"효녀 심청", q:[
+    ["심청이는 왜 아버지 곁을 떠나기로 마음먹었을까요?",
+     "아버지가 눈을 뜨게 해 드리고 싶어서예요. 눈을 뜨려면 쌀을 바쳐야 하는데 집이 가난해서 다른 방법이 없었기 때문에, 자기 몸을 팔아서라도 아버지를 돕고 싶었어요.",
+     "아버지의 눈 / 쌀을 바쳐야 하는 약속 / 아버지를 돕고 싶은 마음"],
+    ["심청이가 떠난 뒤 아버지의 마음은 어땠을까요? 그렇게 생각한 까닭도 써 보세요.",
+     "너무 슬프고 미안했을 거예요. 딸이 자기 때문에 떠났다고 생각했을 테고, 눈을 뜨는 것보다 딸이 곁에 있는 것이 더 좋았을 테니까요.",
+     "슬픔·미안함·후회 같은 마음 + 왜 그렇게 느꼈는지 까닭"],
+    ["내가 심청이라면 아버지를 위해 어떤 일을 하고 싶나요? 까닭도 함께 써 보세요.",
+     "저라면 아버지 손을 잡고 길을 안내해 드리고 밥도 차려 드릴 거예요. 아버지가 혼자 다니시면 위험한데, 곁에서 도와드리면 덜 힘드실 것 같기 때문이에요.",
+     "내가 하고 싶은 일 + 그 까닭. 답은 여러 가지가 될 수 있어요."]
+  ]},
+  kong: { name:"콩쥐 팥쥐", q:[
+    ["콩쥐는 힘든 일을 자꾸 시키는데도 왜 참고 열심히 했을까요?",
+     "마음이 착하고 부지런했기 때문이에요. 화를 내거나 도망치는 대신 자기가 맡은 일을 끝까지 해내려고 했어요.",
+     "착한 마음 / 참을성 / 맡은 일을 끝까지 하려는 마음"],
+    ["콩쥐가 힘들 때마다 도와주는 이가 나타났어요. 왜 그랬을까요?",
+     "콩쥐가 착하고 열심히 살았기 때문이에요. 그 마음을 알아본 이들이 콩쥐를 돕고 싶어졌을 거예요.",
+     "착하게 살면 돕는 이가 생긴다는 생각 / 콩쥐의 착한 마음"],
+    ["내가 콩쥐 옆에 있었다면 콩쥐에게 뭐라고 말해 주고 싶나요?",
+     "\"혼자 힘들어하지 마, 내가 같이 해 줄게\"라고 말해 주고 싶어요. 콩쥐가 너무 외롭고 힘들어 보였기 때문이에요.",
+     "위로하거나 돕겠다는 말 + 그렇게 말하고 싶은 까닭"]
+  ]},
+  dan: { name:"단군 이야기", q:[
+    ["곰과 호랑이 가운데 곰만 사람이 될 수 있었어요. 그 까닭은 무엇일까요?",
+     "곰은 어둡고 답답한 곳에서도 끝까지 참았기 때문이에요. 호랑이는 참지 못하고 밖으로 나가 버려서 사람이 되지 못했어요.",
+     "참을성(끈기)의 차이 / 곰은 참고 호랑이는 못 참음"],
+    ["동굴에서 뛰쳐나간 호랑이의 마음은 어땠을까요? 나도 참기 힘들었던 때를 떠올려 써 보세요.",
+     "답답하고 배고파서 견디기 힘들었을 거예요. 저도 병원에서 오래 기다릴 때 너무 지루해서 나가고 싶었던 적이 있어요.",
+     "호랑이의 마음 + 자기 경험 한 가지"],
+    ["단군 이야기에서 가장 기억에 남는 장면은 무엇인가요? 까닭도 써 보세요.",
+     "곰이 끝까지 참아서 사람이 되는 장면이 기억에 남아요. 오래 참은 끝에 소원이 이루어져서 놀랍고 기뻤기 때문이에요.",
+     "장면 하나를 고르기 + 왜 기억에 남는지 까닭"]
+  ]}
+};
+
 const CHEER = ["정답이에요! 대단해요 👏","딩동댕! 잘했어요 ⭐","맞았어요! 책을 잘 읽었네요 📖","완벽해요! 👍","정답! 척척박사네요 🎉"];
 const NUDGE = ["아쉬워요. 한 번 더 생각해 볼까요?","조금 달라요. 다시 써 볼까요?","음~ 아니에요. 힌트를 볼까요?"];
 
@@ -210,7 +266,8 @@ let list = [], idx = 0, stars = 0, wrong = [], showed = false, done = false, mod
 
 const MODE_DESC = {
   write: "답을 <b>직접 써서</b> 맞혀요. 어려우면 힌트를 보거나, 보기를 열어 볼 수 있어요.<br>직접 맞히면 별 2개 ★★, 보기를 보고 맞히면 별 1개 ★",
-  choice: "<b>보기 세 개 중에서</b> 골라요. 글씨 쓰기가 아직 힘들 때 좋아요.<br>맞히면 별 1개 ★"
+  choice: "<b>보기 세 개 중에서</b> 골라요. 글씨 쓰기가 아직 힘들 때 좋아요.<br>맞히면 별 1개 ★",
+  essay: "생각을 <b>문장으로 써 보는</b> 문제예요. 정답이 하나만 있는 게 아니에요.<br>다 쓰면 예시 답안을 열어 스스로 확인해요. 이야기마다 3문제."
 };
 $("modeDesc").innerHTML = MODE_DESC[mode];
 $("modes").onclick = e => {
@@ -218,17 +275,22 @@ $("modes").onclick = e => {
   mode = b.dataset.mode;
   $("modes").querySelectorAll(".mode").forEach(m => m.classList.toggle("on", m === b));
   $("modeDesc").innerHTML = MODE_DESC[mode];
+  renderMenu();
 };
 
 // 시작 화면 메뉴
-const menuData = [
-  ["sim","효녀 심청","15문제"],
-  ["kong","콩쥐 팥쥐","15문제"],
-  ["dan","단군 이야기","15문제"],
-  ["all","세 가지 모두 도전!","45문제 · 대회 실전 연습"]
-];
-$("menu").innerHTML = menuData.map(m =>
-  `<button class="pick" data-key="${m[0]}"><b>${m[1]}</b><span>${m[2]}</span></button>`).join("");
+function renderMenu(){
+  const n = mode === "essay" ? 3 : 15;
+  const menuData = [
+    ["sim","효녀 심청", n + "문제"],
+    ["kong","콩쥐 팥쥐", n + "문제"],
+    ["dan","단군 이야기", n + "문제"],
+    ["all","세 가지 모두 도전!", (n*3) + "문제 · 대회 실전 연습"]
+  ];
+  $("menu").innerHTML = menuData.map(m =>
+    `<button class="pick" data-key="${m[0]}"><b>${m[1]}</b><span>${m[2]}</span></button>`).join("");
+}
+renderMenu();
 $("menu").onclick = e => {
   const b = e.target.closest(".pick"); if(!b) return;
   start(b.dataset.key);
@@ -236,8 +298,13 @@ $("menu").onclick = e => {
 
 function build(key){
   const keys = key === "all" ? ["sim","kong","dan"] : [key];
+  const src = mode === "essay" ? ESSAY : BOOKS;
   const out = [];
-  keys.forEach(k => BOOKS[k].q.forEach(q => out.push({book:BOOKS[k].name, t:q[0], a:q[1], c:q[2], h:q[3]})));
+  keys.forEach(k => src[k].q.forEach(q => out.push(
+    mode === "essay"
+      ? {book:src[k].name, t:q[0], a:[q[1]], tip:q[2]}
+      : {book:src[k].name, t:q[0], a:q[1], c:q[2], h:q[3]}
+  )));
   return out;
 }
 
@@ -265,9 +332,20 @@ function render(){
   $("answer").value = ""; $("answer").disabled = false;
   $("writeBox").querySelectorAll("button").forEach(b => b.disabled = false);
 
+  $("essayBox").classList.add("hide");
+  $("modelBox").classList.add("hide"); $("modelBox").innerHTML = "";
+  $("selfRow").classList.add("hide");
+  $("modelBtn").disabled = false;
+  $("essay").value = "";
+  $("hintRow").classList.toggle("hide", mode === "essay");
+
   if(mode === "choice"){
     $("writeBox").classList.add("hide");
     showChoices();
+  } else if(mode === "essay"){
+    $("writeBox").classList.add("hide");
+    $("essayBox").classList.remove("hide");
+    $("essay").focus();
   } else {
     $("answer").focus();
   }
@@ -345,6 +423,30 @@ function showChoices(){
   };
 }
 
+// 서술형 — 예시 답안 보고 스스로 확인
+$("modelBtn").onclick = () => {
+  const q = list[idx];
+  $("modelBox").innerHTML = "<b>예시 답안</b>" + q.a[0] +
+    "<div class='tip'>💡 이런 내용이 들어가면 좋아요 — " + q.tip + "</div>";
+  $("modelBox").className = "model fade";
+  $("modelBtn").disabled = true;
+  $("selfRow").classList.remove("hide");
+  $("say").textContent = "내가 쓴 것과 견주어 볼까요?";
+  $("say").className = "say";
+};
+$("selfOk").onclick = () => {
+  if(done) return;
+  $("say").textContent = "잘했어요! 생각을 문장으로 잘 썼네요 ★";
+  $("say").className = "say ok";
+  finishQ(1);
+};
+$("selfNo").onclick = () => {
+  if(done) return;
+  $("say").textContent = "괜찮아요. 마지막에 이 문제만 다시 볼게요.";
+  $("say").className = "say no";
+  finishQ(0);
+};
+
 $("next").onclick = () => {
   idx++;
   if(idx < list.length) render(); else showResult();
@@ -353,6 +455,9 @@ $("next").onclick = () => {
 function showResult(){
   $("quiz").classList.add("hide");
   const max = list.length * (mode === "write" ? 2 : 1);
+  const isEssay = mode === "essay";
+  const wordWrong = isEssay ? "다시 볼 문제" : "틀린 문제";
+  const wordAns = isEssay ? "예시 답안" : "정답";
   const pct = Math.round(stars / max * 100);
   let msg;
   if(pct === 100) msg = "완벽해요! 대회 나가도 되겠어요 🏆";
@@ -367,12 +472,12 @@ function showResult(){
     <p class="stars">${"★".repeat(Math.min(20, Math.round(stars/max*20)))}${"☆".repeat(20-Math.min(20,Math.round(stars/max*20)))}</p>`;
 
   if(wrong.length){
-    html += `<hr class="rule"><p style="font-family:'Gaegu',cursive;font-size:26px;margin:0 0 4px;">틀린 문제 ${wrong.length}개</p>
+    html += `<hr class="rule"><p style="font-family:'Gaegu',cursive;font-size:26px;margin:0 0 4px;">${wordWrong} ${wrong.length}개</p>
       <ul class="list">` + wrong.map(w =>
-        `<li><b>${w.book}</b>${w.t}<br><span style="color:var(--main-deep)">정답: ${w.a[0]}</span></li>`).join("") + `</ul>`;
+        `<li><b>${w.book}</b>${w.t}<br><span style="color:var(--main-deep)">${wordAns}: ${w.a[0]}</span></li>`).join("") + `</ul>`;
   }
   html += `<div class="row sep">
-      ${wrong.length ? `<button class="go" id="again">틀린 문제만 다시 풀기</button>` : ""}
+      ${wrong.length ? `<button class="go" id="again">${isEssay ? "이 문제만 다시 써 보기" : "틀린 문제만 다시 풀기"}</button>` : ""}
       <button class="ghost" id="home">처음으로</button>
     </div>`;
 
@@ -396,7 +501,7 @@ function showResult(){
 #site-meta b{color:#C0512F;font-weight:normal;}
 @media print{#site-meta{display:none !important;}}
 </style>
-<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.0 &nbsp;·&nbsp; 2026-08-16</div>
+<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.1 &nbsp;·&nbsp; 2026-08-16</div>
 <script>
 (function(){
   var el=document.getElementById('visit-count');
